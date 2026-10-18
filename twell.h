@@ -591,7 +591,15 @@ twell_context* twell_context_create(
     ctx->gestures           = (twell_gesture_data*)twell_arena_alloc(&cursor, max_gestures * sizeof(twell_gesture_data), arena_end);
     ctx->resting_queue      = (twell_property_id*)twell_arena_alloc(&cursor, max_properties * sizeof(twell_property_id), arena_end);
 
-    if (!ctx->prop_allocated || !ctx->presentation_value || (max_gestures > 0 && !ctx->gestures)) {
+    if (!ctx->prop_allocated || !ctx->prop_dimensions ||
+        !ctx->base_value || !ctx->presentation_value || !ctx->target_value ||
+        !ctx->eps_displacement || !ctx->eps_velocity ||
+        !ctx->is_resting || !ctx->unit_type ||
+        !ctx->tracked_gesture || !ctx->boundary_min || !ctx->boundary_max ||
+        !ctx->impulses || !ctx->impulse_head || !ctx->impulse_count ||
+        !ctx->driver_links ||
+        (max_gestures > 0 && !ctx->gestures) ||
+        !ctx->resting_queue) {
         return NULL;
     }
 

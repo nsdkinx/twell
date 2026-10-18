@@ -40,15 +40,18 @@ Include `twell.h` in your build. In one C file, define `TWELL_IMPL`:
 #define TWELL_IMPL
 #include "twell.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void) {
-    uint8_t arena[1024 * 64]; // 64 KB for example
-    twell_context* ctx = twell_context_create(
-        arena,
-        sizeof(arena),
-        128 /* max props */,
-        32 /* max gestures */
-    );
+    // Ask Twell how large the arena must be, then allocate exactly that
+    size_t arena_size = twell_get_memory_requirement(128 /* max props */, 32 /* max gestures */);
+    uint8_t* arena = malloc(arena_size);
+    twell_context* ctx = twell_context_create(arena, arena_size, 128, 32);
+    if (!ctx) {
+        fprintf(stderr, "failed to create twell context\n");
+        free(arena);
+        return 1;
+    }
 
     // create a 2D position property (e.g. X and Y coords in pixels)
     twell_vector2 start_pos = { 100.0, 100.0 };
@@ -79,6 +82,7 @@ int main(void) {
         printf("Time: %.2fs | Render position: (%.1f, %.1f)\n", current_time, pos.x, pos.y);
     }
 
+    free(arena);
     return 0;
 }
 ```
